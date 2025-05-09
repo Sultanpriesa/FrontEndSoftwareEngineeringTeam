@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header.jsx";
-import Sidebar from "../components/Sidebar.jsx";
+import Sidebar from "../components/Sidebar.js";
 import Footer from "../components/Footer.jsx";
 
 export default function Root() {

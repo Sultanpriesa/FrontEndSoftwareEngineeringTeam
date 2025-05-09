@@ -22,9 +22,7 @@ const router = createBrowserRouter(
       <Route path="settings" element={<ProtectedRoute requireAdmin />}>
         <Route index element={<Settings />} />
       </Route>
-      <Route path="Apply" element={<ProtectedRoute requireAdmin />}>
-        <Route index element={<Apply />} />
-      </Route>
+      
       
       <Route path="*" element={<ErrorPage />} />
     </Route>
