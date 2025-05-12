@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import jwt_decode from "jwt-decode";
+import * as jwt_decode from "jwt-decode";
 import {
   login as apiLogin,
   logout as apiLogout,
@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
     window.accessToken = token;
     setToken(token);
     if (token) {
-      const { exp, ...payload } = jwt_decode(token);
+      const { exp, ...payload } = jwt_decode.default(token);
       setUser(payload);
     } else {
       setUser(null);

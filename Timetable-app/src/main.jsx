@@ -1,3 +1,5 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
 import "./index.css";
 import {
   createBrowserRouter,
@@ -6,23 +8,21 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 
+import { AuthProvider } from "./context/AuthContext";
 import Login from "./Routes/Login";
 import Root from "./Routes/Root";
 import ErrorPage from "./error-page";
-import Schedule from "./routes/Schedule";
+import SchedulePage from "./routes/SchedulePage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Root />} errorElement={<ErrorPage />}>
       <Route index element={<Login />} />
       <Route path="Schedule" element={<ProtectedRoute requireAdmin />}>
-        <Route index element={<Schedule />} />
+        <Route index element={<SchedulePage />} />
       </Route>
-      <Route path="settings" element={<ProtectedRoute requireAdmin />}>
-        <Route index element={<Settings />} />
-      </Route>
-      
-      
+
       <Route path="*" element={<ErrorPage />} />
     </Route>
   )
