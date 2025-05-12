@@ -17,14 +17,18 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Root />} errorElement={<ErrorPage />}>
-      <Route index element={<Login />} />
-      <Route path="Schedule" element={<ProtectedRoute requireAdmin />}>
-        <Route index element={<SchedulePage />} />
+    <>
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Root />} errorElement={<ErrorPage />}>
+        <Route
+          path="dashboard"
+          element={<ProtectedRoute />}
+        >
+          <Route index element={<SchedulePage />} />
+        </Route>
+        <Route path="*" element={<ErrorPage />} />
       </Route>
-
-      <Route path="*" element={<ErrorPage />} />
-    </Route>
+    </>
   )
 );
 

@@ -1,58 +1,55 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import * as jwt_decode from "jwt-decode";
-import {
-  login as apiLogin,
-  logout as apiLogout,
-  refreshToken,
-} from "../Services/Authservice" ;
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [accessToken, setToken] = useState(null);
+  const [token, setToken] = useState(() => sessionStorage.getItem("backend-token") || null);
 
-  // on mount, try to get a fresh access token
   useEffect(() => {
-    (async () => {
-      try {
-        const token = await refreshToken();
-        applyToken(token);
-      } catch {
-        applyToken(null);
-      }
-    })();
-  }, []);
-
-  function applyToken(token) {
-    window.accessToken = token;
-    setToken(token);
     if (token) {
-      const { exp, ...payload } = jwt_decode.default(token);
-      setUser(payload);
+      try {
+        const decoded = jwt_decode.default(token);
+        // Check expiry
+        if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+          setUser(null);
+          setToken(null);
+          sessionStorage.removeItem("backend-token");
+        } else {
+          setUser(decoded);
+        }
+      } catch {
+        setUser(null);
+        setToken(null);
+        sessionStorage.removeItem("backend-token");
+      }
     } else {
       setUser(null);
     }
-  }
+  }, [token]);
 
   async function login(username, password) {
-    const { accessToken: token, user: userData } = await apiLogin(
-      username,
-      password
-    );
-    applyToken(token);
-    return userData;
+    const res = await fetch("/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+    if (!res.ok) throw new Error("Login failed");
+    const data = await res.json();
+    setToken(data.accessToken);
+    sessionStorage.setItem("backend-token", data.accessToken);
+    return data.user;
   }
 
-  async function logout() {
-    await apiLogout();
-    applyToken(null);
+  function logout() {
+    setToken(null);
+    setUser(null);
+    sessionStorage.removeItem("backend-token");
   }
-
-  const isAdmin = () => user?.role === "admin";
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAdmin }}>
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

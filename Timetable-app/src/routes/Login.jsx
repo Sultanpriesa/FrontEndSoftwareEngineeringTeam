@@ -1,7 +1,7 @@
 // src/components/Login.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../Context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -21,8 +21,8 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md w-96">
+    <div className="flex items-center justify-center h-screen bg-base-200">
+      <form onSubmit={handleSubmit} className="bg-base-300 p-8 rounded shadow-md w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <input
