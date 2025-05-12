@@ -10,7 +10,6 @@ import Login from "./Routes/Login";
 import Root from "./Routes/Root";
 import ErrorPage from "./error-page";
 import Schedule from "./routes/Schedule";
-import Index from "./routes/Index";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
