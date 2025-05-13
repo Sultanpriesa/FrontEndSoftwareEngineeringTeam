@@ -13,16 +13,17 @@ import Login from "./Routes/Login";
 import Root from "./Routes/Root";
 import ErrorPage from "./error-page";
 import SchedulePage from "./routes/SchedulePage";
-import ProtectedRoute from "./components/ProtectedRoute";
+import RequireAuth from "./components/requireAuth";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/login" element={<Login />} />
+      <Route path="/unauthorized" element={<div className='flex items-center justify-center h-screen text-2xl text-red-600'>Unauthorized: You do not have access to this page.</div>} />
       <Route path="/" element={<Root />} errorElement={<ErrorPage />}>
         <Route
           path="dashboard"
-          element={<ProtectedRoute />}
+          element={<RequireAuth allowedRoles={['admin', 'user']} />}
         >
           <Route index element={<SchedulePage />} />
         </Route>

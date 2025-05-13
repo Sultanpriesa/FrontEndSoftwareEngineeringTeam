@@ -48,8 +48,14 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem("backend-token");
   }
 
+  // Helper to get auth header for fetch
+  function getAuthHeader() {
+    if (!token) return {};
+    return { Authorization: `Bearer ${token}` };
+  }
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, getAuthHeader }}>
       {children}
     </AuthContext.Provider>
   );
