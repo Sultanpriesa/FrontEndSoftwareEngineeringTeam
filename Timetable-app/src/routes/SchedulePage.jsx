@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ScheduleGrid from '../components/ScheduleGrid';
+import { useAuth } from '../context/AuthContext';
 
 const sampleEvents = {
   Monday: [{ id:1, title:'English 101 course', location:'', startHour:8,endHour:9 }],
@@ -10,6 +11,24 @@ const sampleEvents = {
 };
 
 export default function SchedulePage() {
+  const [events, setEvents] = useState(sampleEvents);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const { user } = useAuth();
+
+  const handleEventClick = (event) => {
+    setSelectedEvent(event);
+  };
+
+  const handleDelete = () => {
+    // Remove the event from the correct day
+    const newEvents = { ...events };
+    for (const day in newEvents) {
+      newEvents[day] = newEvents[day].filter(evt => evt.id !== selectedEvent.id);
+    }
+    setEvents(newEvents);
+    setSelectedEvent(null);
+  };
+
   return (
     <div className="p-6">
       <div className="mb-2 flex items-center justify-between">
@@ -22,8 +41,31 @@ export default function SchedulePage() {
         </div>
       </div>
       <div className="bg-green-100 rounded p-2">
-        <ScheduleGrid events={sampleEvents} />
+        <ScheduleGrid events={events} onEventClick={handleEventClick} />
       </div>
+      {/* Popup/modal */}
+      {selectedEvent && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white p-6 rounded shadow-lg min-w-[300px]">
+            <h2 className="text-lg font-bold mb-2">{selectedEvent.title}</h2>
+            <p className="mb-4">{selectedEvent.location}</p>
+            {(user?.role === "admin" || user?.role === "tutor") && (
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+                onClick={handleDelete}
+              >
+                Delete Event
+              </button>
+            )}
+            <button
+              className="bg-gray-300 px-4 py-2 rounded"
+              onClick={() => setSelectedEvent(null)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
