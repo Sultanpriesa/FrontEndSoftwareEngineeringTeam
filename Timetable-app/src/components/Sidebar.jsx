@@ -9,7 +9,7 @@ export default function Sidebar() {
     { label: 'My Instructors', icon: <User />, path: '/instructors' },
   ];
   return (
-    <aside className="w-64 bg-gray-100 border-r min-h-0 flex flex-col h-full">
+    <aside className="w-64 bg-base-100 border-r min-h-0 flex flex-col h-full">
       <div className="flex flex-col items-center py-6 border-b mb-4">
         <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="w-16 h-16 rounded-full mb-2" />
         <div className="font-bold">My Schedule</div>

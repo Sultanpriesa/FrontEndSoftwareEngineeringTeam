@@ -3,7 +3,7 @@ import { Search, Bell } from 'react-feather';
 
 export default function Header() {
   return (
-    <header className="flex items-center justify-between px-8 py-4 bg-white border-b shadow-sm">
+    <header className="flex items-center justify-between px-8 py-4 bg-base-100 border-b shadow-sm">
       <div className="text-2xl font-bold">My Schedule</div>
       <div className="flex items-center gap-6">
         <div className="relative">

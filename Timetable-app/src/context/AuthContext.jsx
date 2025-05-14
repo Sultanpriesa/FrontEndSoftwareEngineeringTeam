@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import * as jwt_decode from "jwt-decode";
+import jwt_decode from "jwt-decode"; // <-- Correct import
 
 const AuthContext = createContext();
 
@@ -10,7 +10,8 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (token) {
       try {
-        const decoded = jwt_decode.default(token);
+        const decoded = jwt_decode(token); // <-- Correct usage
+        console.log("Decoded token:", decoded);
         // Check expiry
         if (decoded.exp && Date.now() >= decoded.exp * 1000) {
           setUser(null);
@@ -19,7 +20,8 @@ export function AuthProvider({ children }) {
         } else {
           setUser(decoded);
         }
-      } catch {
+      } catch (err) {
+        console.log("JWT decode error:", err);
         setUser(null);
         setToken(null);
         sessionStorage.removeItem("backend-token");
@@ -30,7 +32,7 @@ export function AuthProvider({ children }) {
   }, [token]);
 
   async function login(username, password) {
-    const res = await fetch("/auth/login", {
+    const res = await fetch("http://localhost:5174/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })

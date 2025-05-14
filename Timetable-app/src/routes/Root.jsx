@@ -5,7 +5,7 @@ import Footer from "../components/Footer.jsx";
 
 export default function Root() {
   return (
-    <div className="h-screen flex flex-col bg-gray-100">
+    <div className="h-screen flex flex-col bg-base-300">
       <div className="flex flex-1 min-h-0">
         <aside className="w-64 bg-white border-r min-h-0 flex flex-col">
           <Sidebar />
