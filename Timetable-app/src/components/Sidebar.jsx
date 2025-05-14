@@ -21,7 +21,7 @@ export default function Sidebar() {
             <NavLink
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center p-2 rounded ${isActive ? 'bg-gray-200 font-semibold' : 'hover:bg-gray-100'}`
+                `flex items-center p-2 rounded ${isActive ? 'bg-gray-200 font-semibold' : 'hover:bg-primary'}`
               }
             >
               <span className="mr-2">{item.icon}</span>

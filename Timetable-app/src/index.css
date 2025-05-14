@@ -2,3 +2,20 @@
 @plugin "daisyui"{
     theme: "dark --default"
 }
+
+/* FullCalendar dark mode overrides */
+.fc {
+  --fc-page-bg-color: #18181b;
+  --fc-neutral-bg-color: #27272a;
+  --fc-neutral-text-color: #d4d4d8;
+  --fc-border-color: #3f3f46;
+  --fc-button-bg-color: #27272a;
+  --fc-button-text-color: #d4d4d8;
+  --fc-button-border-color: #3f3f46;
+  --fc-button-hover-bg-color: #3f3f46;
+  --fc-button-hover-border-color: #52525b;
+  --fc-today-bg-color: #27272a;
+  --fc-event-bg-color: #2563eb;
+  --fc-event-border-color: #2563eb;
+  --fc-event-text-color: #fff;
+}
