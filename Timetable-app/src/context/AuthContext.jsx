@@ -1,58 +1,73 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import jwt_decode from "jwt-decode";
-import {
-  login as apiLogin,
-  logout as apiLogout,
-  refreshToken,
-} from "../Services/Authservice" ;
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [accessToken, setToken] = useState(null);
+  const [token, setToken] = useState(() => sessionStorage.getItem("backend-token") || null);
 
-  // on mount, try to get a fresh access token
   useEffect(() => {
-    (async () => {
-      try {
-        const token = await refreshToken();
-        applyToken(token);
-      } catch {
-        applyToken(null);
-      }
-    })();
-  }, []);
-
-  function applyToken(token) {
-    window.accessToken = token;
-    setToken(token);
     if (token) {
-      const { exp, ...payload } = jwt_decode(token);
-      setUser(payload);
+      // Simulate decoding a JWT token
+      try {
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+          setUser(null);
+          setToken(null);
+          sessionStorage.removeItem("backend-token");
+        } else {
+          setUser(decoded);
+        }
+      } catch {
+        setUser(null);
+        setToken(null);
+        sessionStorage.removeItem("backend-token");
+      }
     } else {
       setUser(null);
     }
-  }
+  }, [token]);
 
   async function login(username, password) {
-    const { accessToken: token, user: userData } = await apiLogin(
-      username,
-      password
-    );
-    applyToken(token);
-    return userData;
+    // Hardcoded credentials: admin/admin or student/student
+    if (
+      (username === "admin" && password === "admin") ||
+      (username === "student" && password === "student")
+    ) {
+      // Create a fake JWT payload
+      const payload = {
+        id: username === "admin" ? 1 : 2,
+        username,
+        role: username === "admin" ? "admin" : "user",
+        exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour expiry
+      };
+      // Fake JWT: header.payload.signature (we only care about payload)
+      const fakeToken =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
+        btoa(JSON.stringify(payload)) +
+        ".signature";
+      setToken(fakeToken);
+      sessionStorage.setItem("backend-token", fakeToken);
+      setUser(payload);
+      return payload;
+    } else {
+      throw new Error("Login failed");
+    }
   }
 
-  async function logout() {
-    await apiLogout();
-    applyToken(null);
+  function logout() {
+    setToken(null);
+    setUser(null);
+    sessionStorage.removeItem("backend-token");
   }
 
-  const isAdmin = () => user?.role === "admin";
+  function getAuthHeader() {
+    if (!token) return {};
+    return { Authorization: `Bearer ${token}` };
+  }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAdmin }}>
+    <AuthContext.Provider value={{ user, token, login, logout, getAuthHeader }}>
       {children}
     </AuthContext.Provider>
   );
