@@ -10,13 +10,14 @@ import {
 } from "react-router-dom";
 
 import { AuthProvider } from "./context/AuthContext";
-import Login from "./Routes/Login";
+import Login from "./routes/Login";
 import Root from "./Routes/Root";
 import ErrorPage from "./error-page";
 import SchedulePage from "./routes/SchedulePage";
 import RequireAuth from "./components/requireAuth";
 import ClassesPage from "./routes/ClassesPage";
 import InstructorsPage from "./routes/InstructorsPage";
+import StudentsPage from "./routes/StudentsPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -34,12 +35,27 @@ const router = createBrowserRouter(
         {/* Redirect / to /dashboard */}
         <Route
           path="/"
-          element={<RequireAuth allowedRoles={["admin", "user"]} />}
+          element={<RequireAuth allowedRoles={["admin", "user", "tutor"]} />}
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<SchedulePage />} />
           <Route path="classes" element={<ClassesPage />} />
-          <Route path="instructors" element={<InstructorsPage />} />
+          <Route
+            path="instructors"
+            element={
+              <RequireAuth allowedRoles={["admin"]}>
+                <InstructorsPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="students"
+            element={
+              <RequireAuth allowedRoles={["admin", "tutor"]}>
+                <StudentsPage />
+              </RequireAuth>
+            }
+          />
         </Route>
         <Route path="*" element={<ErrorPage />} />
       </Route>

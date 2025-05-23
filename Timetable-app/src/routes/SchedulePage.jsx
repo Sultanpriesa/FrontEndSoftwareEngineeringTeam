@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useAuth } from '../context/AuthContext';
+import useAuth  from '../Hooks/UseAuth.js';
 
 const today = new Date();
 const getISODate = (date, hour) => {
@@ -17,26 +17,30 @@ const getDayOfWeek = (offset) => {
   return d;
 };
 
-// Demo events for this week and next week
-const sampleEvents = [
-  // This week (Mon-Sun)
-  { id: 1, title: 'English 101 course', start: getISODate(getDayOfWeek(1), 9), end: getISODate(getDayOfWeek(1), 10), location: 'Room 101' },
-  { id: 2, title: 'Study of Human Biology', start: getISODate(getDayOfWeek(2), 11), end: getISODate(getDayOfWeek(2), 12), location: 'Lab 2' },
-  { id: 3, title: 'Paper review session', start: getISODate(getDayOfWeek(3), 13), end: getISODate(getDayOfWeek(3), 14), location: 'Room 202' },
-  { id: 4, title: 'Room 300 class details', start: getISODate(getDayOfWeek(4), 15), end: getISODate(getDayOfWeek(4), 16), location: 'Room 300' },
-  { id: 5, title: 'Understanding the World Economy', start: getISODate(getDayOfWeek(5), 17), end: getISODate(getDayOfWeek(5), 18), location: 'Room 105' },
-  // Next week (Mon-Sun)
-  { id: 6, title: 'Advanced Calculus', start: getISODate(getDayOfWeek(8), 9), end: getISODate(getDayOfWeek(8), 11), location: 'Room 110' },
-  { id: 7, title: 'Physics Lab', start: getISODate(getDayOfWeek(9), 12), end: getISODate(getDayOfWeek(9), 14), location: 'Lab 1' },
-  { id: 8, title: 'Literature Seminar', start: getISODate(getDayOfWeek(10), 10), end: getISODate(getDayOfWeek(10), 12), location: 'Room 210' },
-  { id: 9, title: 'Chemistry Workshop', start: getISODate(getDayOfWeek(11), 15), end: getISODate(getDayOfWeek(11), 17), location: 'Lab 3' },
-  { id: 10, title: 'History Discussion', start: getISODate(getDayOfWeek(12), 16), end: getISODate(getDayOfWeek(12), 17), location: 'Room 115' },
+// Demo events for this week and next week (weekdays only: Mon-Fri)
+const allEvents = [
+  { id: 1, title: 'English 101 course', start: getISODate(getDayOfWeek(1), 9), end: getISODate(getDayOfWeek(1), 10), location: 'Room 101' }, // Monday
+  { id: 2, title: 'Study of Human Biology', start: getISODate(getDayOfWeek(2), 11), end: getISODate(getDayOfWeek(2), 12), location: 'Lab 2' }, // Tuesday
+  { id: 3, title: 'Paper review session', start: getISODate(getDayOfWeek(3), 13), end: getISODate(getDayOfWeek(3), 14), location: 'Room 202' }, // Wednesday
+  { id: 4, title: 'Room 300 class details', start: getISODate(getDayOfWeek(4), 15), end: getISODate(getDayOfWeek(4), 16), location: 'Room 300' }, // Thursday
+  { id: 5, title: 'Understanding the World Economy', start: getISODate(getDayOfWeek(5), 17), end: getISODate(getDayOfWeek(5), 18), location: 'Room 105' }, // Friday
+  // Next week (Mon-Fri)
+  { id: 6, title: 'Advanced Calculus', start: getISODate(getDayOfWeek(8), 9), end: getISODate(getDayOfWeek(8), 11), location: 'Room 110' }, // Next Monday
+  { id: 7, title: 'Physics Lab', start: getISODate(getDayOfWeek(9), 12), end: getISODate(getDayOfWeek(9), 14), location: 'Lab 1' }, // Next Tuesday
+  { id: 8, title: 'Literature Seminar', start: getISODate(getDayOfWeek(10), 10), end: getISODate(getDayOfWeek(10), 12), location: 'Room 210' }, // Next Wednesday
+  { id: 9, title: 'Chemistry Workshop', start: getISODate(getDayOfWeek(11), 15), end: getISODate(getDayOfWeek(11), 17), location: 'Lab 3' }, // Next Thursday
+  { id: 10, title: 'History Discussion', start: getISODate(getDayOfWeek(12), 16), end: getISODate(getDayOfWeek(12), 17), location: 'Room 115' }, // Next Friday
 ];
 
 export default function SchedulePage() {
-  const [events, setEvents] = useState(sampleEvents);
+  const [events, setEvents] = useState(allEvents);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const { user } = useAuth();
+
+  // Filter events based on user role and assigned classes
+  const filteredEvents = user?.role === "tutor"
+    ? events.filter(event => user.assignedClasses.includes(event.id))
+    : events;
 
   const handleEventClick = (clickInfo) => {
     setSelectedEvent(clickInfo.event);
@@ -59,11 +63,12 @@ export default function SchedulePage() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
           }}
-          events={events}
+          events={filteredEvents}
           eventClick={handleEventClick}
           height="auto"
           slotMinTime="09:00:00"   
-          slotMaxTime="19:00:00"   
+          slotMaxTime="19:00:00"
+          hiddenDays={[0, 6]} 
         />
       </div>
       {/* Popup/modal */}
