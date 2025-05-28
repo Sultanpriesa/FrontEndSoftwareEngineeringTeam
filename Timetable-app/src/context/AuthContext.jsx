@@ -2,7 +2,6 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 
 export const AuthContext = createContext(null);
 
-// Mock user data with tutor role
 const mockUsers = {
   admin: { username: "admin", password: "admin", role: "admin" },
   john: { username: "john", password: "user", role: "user" },
@@ -10,7 +9,7 @@ const mockUsers = {
     username: "tutor",
     password: "tutor",
     role: "tutor",
-    assignedClasses: [1, 2, 3], // Changed to numbers to match event IDs
+    assignedClasses: [1, 2, 3], 
   },
 };
 

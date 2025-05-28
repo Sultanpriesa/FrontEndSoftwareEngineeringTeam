@@ -8,7 +8,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError]       = useState();
   const { login, getAuthHeader } = useAuth();
-  const nav                      = useNavigate();
+  const nav = useNavigate();
 
   const handleSubmit = async e => {
     e.preventDefault();

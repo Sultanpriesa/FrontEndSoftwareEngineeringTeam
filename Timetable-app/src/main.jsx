@@ -11,13 +11,14 @@ import {
 
 import { AuthProvider } from "./context/AuthContext";
 import Login from "./routes/Login";
-import Root from "./Routes/Root";
+import Root from "./routes/Root";
 import ErrorPage from "./error-page";
 import SchedulePage from "./routes/SchedulePage";
 import RequireAuth from "./components/requireAuth";
 import ClassesPage from "./routes/ClassesPage";
 import InstructorsPage from "./routes/InstructorsPage";
 import StudentsPage from "./routes/StudentsPage";
+import { GlobalInfoProvider } from "./context/GlobalInfoContext";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -34,7 +35,6 @@ const router = createBrowserRouter(
       <Route path="/" element={<Root />} errorElement={<ErrorPage />}>
         {/* Redirect / to /dashboard */}
         <Route
-          path="/"
           element={<RequireAuth allowedRoles={["admin", "user", "tutor"]} />}
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
@@ -42,20 +42,16 @@ const router = createBrowserRouter(
           <Route path="classes" element={<ClassesPage />} />
           <Route
             path="instructors"
-            element={
-              <RequireAuth allowedRoles={["admin"]}>
-                <InstructorsPage />
-              </RequireAuth>
-            }
-          />
+            element={<RequireAuth allowedRoles={["admin"]} />}
+          >
+            <Route index element={<InstructorsPage />} />
+          </Route>
           <Route
             path="students"
-            element={
-              <RequireAuth allowedRoles={["admin", "tutor"]}>
-                <StudentsPage />
-              </RequireAuth>
-            }
-          />
+            element={<RequireAuth allowedRoles={["admin", "tutor"]} />}
+          >
+            <Route index element={<StudentsPage />} />
+          </Route>
         </Route>
         <Route path="*" element={<ErrorPage />} />
       </Route>
@@ -66,7 +62,9 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <GlobalInfoProvider>
+        <RouterProvider router={router} />
+      </GlobalInfoProvider>
     </AuthProvider>
   </React.StrictMode>
 );
