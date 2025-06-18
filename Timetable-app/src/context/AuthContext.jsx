@@ -1,61 +1,53 @@
-import { createContext, useState, useEffect, useContext } from "react";
-import jwt_decode from "jwt-decode";
-import {
-  login as apiLogin,
-  logout as apiLogout,
-  refreshToken,
-} from "../Services/Authservice" ;
+import React, { createContext, useState, useEffect, useContext } from "react";
 
-const AuthContext = createContext();
+export const AuthContext = createContext(null);
+
+const mockUsers = {
+  admin: { username: "admin", password: "admin", role: "admin" },
+  john: { username: "john", password: "user", role: "user" },
+  tutor: {
+    username: "tutor",
+    password: "tutor",
+    role: "tutor",
+    assignedClasses: [1, 2, 3], 
+  },
+};
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [accessToken, setToken] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = sessionStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
-  // on mount, try to get a fresh access token
   useEffect(() => {
-    (async () => {
-      try {
-        const token = await refreshToken();
-        applyToken(token);
-      } catch {
-        applyToken(null);
-      }
-    })();
-  }, []);
-
-  function applyToken(token) {
-    window.accessToken = token;
-    setToken(token);
-    if (token) {
-      const { exp, ...payload } = jwt_decode(token);
-      setUser(payload);
+    if (user) {
+      sessionStorage.setItem("user", JSON.stringify(user));
     } else {
-      setUser(null);
+      sessionStorage.removeItem("user");
     }
-  }
+  }, [user]);
 
-  async function login(username, password) {
-    const { accessToken: token, user: userData } = await apiLogin(
-      username,
-      password
-    );
-    applyToken(token);
-    return userData;
-  }
+  const login = async (username, password) => {
+    const foundUser = mockUsers[username];
+    if (foundUser && foundUser.password === password) {
+      setUser(foundUser);
+      return Promise.resolve(true);
+    }
+    return Promise.reject("Invalid credentials");
+  };
 
-  async function logout() {
-    await apiLogout();
-    applyToken(null);
-  }
+  const logout = () => {
+    setUser(null);
+    sessionStorage.removeItem("user");
+  };
 
-  const isAdmin = () => user?.role === "admin";
+  const value = {
+    user,
+    login,
+    logout,
+  };
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout, isAdmin }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);
